@@ -1,6 +1,8 @@
 const router=require('express').Router()
 const user=require('../model/userModel')
 const bcrypt=require('bcrypt')
+const jwt=require('jsonwebtoken')
+// register
 router.post('/',async (req,res)=>{
     try{
         const {email,password,passverify}=req.body
@@ -26,17 +28,27 @@ router.post('/',async (req,res)=>{
         // hash password
         const salt=await bcrypt.genSalt()
         const passwordHash=await bcrypt.hash(password,salt)
-        console.log(passwordHash) 
+        
         //save in database
         const newUser=new user({
             email,passwordHash
         })
         const saveUser=await newUser.save()
-        
-
-
+        // login
+        //sign token
+        const token=jwt.sign({
+            user :saveUser._id
+        },process.env.JWT_SECRET)
         console.log(email)
-        res.send("Test")
+        console.log(token)
+
+        // send token
+        res.cookie("token",token,{
+            httpOnly: true, 
+        }).send()
+        
+        
+        
     }
     catch(err){
         console.error(err)
