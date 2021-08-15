@@ -1,5 +1,6 @@
 const router=require('express').Router()
 const user=require('../model/userModel')
+const bcrypt=require('bcrypt')
 router.post('/',async (req,res)=>{
     try{
         const {email,password,passverify}=req.body
@@ -22,6 +23,11 @@ router.post('/',async (req,res)=>{
                 error: "Email Already register"
             })
         }
+        // hash password
+        const salt=await bcrypt.genSalt()
+        const passwordHash=await bcrypt.hash(password,salt)
+        console.log(passwordHash) 
+
 
         console.log(email)
         res.send("Test")
