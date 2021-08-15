@@ -27,6 +27,12 @@ router.post('/',async (req,res)=>{
         const salt=await bcrypt.genSalt()
         const passwordHash=await bcrypt.hash(password,salt)
         console.log(passwordHash) 
+        //save in database
+        const newUser=new user({
+            email,passwordHash
+        })
+        const saveUser=await newUser.save()
+        
 
 
         console.log(email)
