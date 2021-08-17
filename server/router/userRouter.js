@@ -45,7 +45,9 @@ router.post('/',async (req,res)=>{
         // send token
         res.cookie("token",token,{
             httpOnly: true, 
-        }).send()
+        }).json({message :"Done"}).send()
+        
+        
         
         
         
@@ -55,5 +57,56 @@ router.post('/',async (req,res)=>{
         res.status(500).send()
     }
     
+})
+router.post('/login',async (req,res)=>{
+    try{
+        const {email,password}=req.body
+        //validation
+        if(!email|| !password ){
+            return res.status(400).json({error:"Enter Missing Field"})
+
+        }
+        const existingUser=await user.findOne({email})
+        if(!existingUser){
+            return res.status(401).json({
+                error: "Wrong email or pass"
+            })
+
+
+        }
+        //  checking password
+        const passwordCorrect=await bcrypt.compare(password,existingUser.passwordHash)
+
+        if(!passwordCorrect){
+            return res.status(401).json({
+                error: " pass"
+            })
+        }
+        
+        //sign token
+        const token=jwt.sign({
+            user :existingUser._id
+        },process.env.JWT_SECRET)
+        console.log(email)
+        console.log(token)
+
+        // send token
+        res.cookie("token",token,{
+            httpOnly: true, 
+        }).send()
+        console.log("You  logged in")
+        
+    }catch(err){
+        console.error(err)
+       return res.status(500).send()
+
+    }
+
+})
+router.get('/logout',(req,res)=>{
+    res.cookie("token","",{
+        httpOnly: true,
+        expires : new Date(0)
+    }).send()
 })
 module.exports=router
