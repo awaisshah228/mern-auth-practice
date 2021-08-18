@@ -1,10 +1,15 @@
-import React,{useState} from 'react'
+import React,{useContext, useState} from 'react'
 import axios from 'axios'
+import AuthContext from '../../context/AuthContext'
+import { useHistory } from 'react-router-dom'
 
 export default function Register() {
     const [email, setemail] = useState("")
     const [password, setpassword] = useState("")
     const [passverify, setpassverify] = useState("")
+    const {getLoggedIn}=useContext(AuthContext)
+    const history=useHistory()
+
     async function register(e){
         e.preventDefault()
         try{
@@ -18,6 +23,8 @@ export default function Register() {
             }).catch((err)=>{
                 console.log(err.response.data)
             })
+            await getLoggedIn()
+            await history.push('/')
             
         }
         catch(err){

@@ -1,9 +1,13 @@
-import React,{useState} from 'react'
+import React,{useContext, useState} from 'react'
 import axios from 'axios'
+import AuthContext from '../../context/AuthContext'
+import { useHistory } from 'react-router-dom'
 
 export default function Login() {
     const [email, setemail] = useState("")
     const [password, setpassword] = useState("")
+    const {getLoggedIn}=useContext(AuthContext)
+    const history=useHistory()
     async function login(e){
         e.preventDefault()
         try{
@@ -16,6 +20,8 @@ export default function Login() {
             }).catch((err)=>{
                 console.log(err.response.data)
             })
+            await getLoggedIn()
+            history.push('/')
             
         }
         catch(err){
